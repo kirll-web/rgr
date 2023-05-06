@@ -111,101 +111,10 @@ END; {CreateList}
 
 
 
-PROCEDURE UpdateList(VAR FOut: TEXT; VAR ListFout: RecArray; VAR ListFIn: RecArray; VAR First: INTEGER);
-VAR
-  ListFOut: RecArray;
-  Node: STRING;
-  CheckAllWords: INTEGER;
 
-PROCEDURE ReadCountOfFOutNode(VAR List: RecArray; VAR Count: INTEGER);
-BEGIN
-  IF (NOT EOLN) AND (NOT EOF)
-  THEN
-    BEGIN
-      WHILE (NOT EOLN()) OR (NOT Count IN INTEGER)
-      DO
-        BEGIN 
-          READ(Count);
-        END
-    END
-END;
-PROCEDURE CreateListOfFOut(VAR FOut: TEXT;VAR List: RecArray);
-VAR 
-  Count: INTEGER;
-  CountList: INTEGER;
-  Node: STRING;
-BEGIN
-  CountList := 0;
-  Node := '';
-  Count := 1;
-  IF (NOT EOLN(FOut)) AND (NOT EOF(FOut))
-  THEN
-    BEGIN
-      WHILE (NOT EOF(FOut)) OR (Count <> MaxWords)
-      DO
-        BEGIN
-          IF NOT EOLN(FOut)
-          THEN
-            CreateNode(FOut, Node);
-            IF Node <> ''
-            THEN
-              BEGIN
-                ReadCountOfFOutNode(FOut, Count);
-                List[Count].Node := Node;
-                List[Count].Count := Count;
-                Count := Count + 1
-              END
-          ELSE
-            IF NOT EOF(FOut)
-            THEN
-              READLN(FOut)
-        END
-    END
 
-END;
 
-PROCEDURE AddCount(VAR ListFIn: RecArray; VAR ListFOut: RecArray; VAR CheckAllWords: INTEGER);
-VAR 
-  Count: INTEGER;
-  
-BEGIN
-  Count := 0;
-  CheckAllWords := 0
-  WHILE Count <> MaxWords
-  DO
-    BEGIN
-      IF ListFIn[Count].Node = ListFOut[Count].Node
-      THEN
-        BEGIN
-          ListFOut[Count].Count := ListFOut[Count].Count + 1;
-          CheckAllWords := CheckAllWords + 1;
-        END
-      Count := Count + 1;
-    END
-END
-BEGIN {UpdateList}
-  // CreateList(FIn, RecArray, First);
-  CreateListOfFOut(FOut, ListFOut);
-  AddCount(ListFOut, ListFIn, CheckAllWords);
-    
-END; {UpdateList}
 
-// FUNCTION CheckElemArray(List: RecArray): BOOLEAN;
-// VAR
-//   Count: INTEGER;
-//   Found: BOOLEAN;
-// BEGIN
-//   Found := TRUE;
-//   Count := 1;
-//   WHILE  (Count <> 137000) AND (Found = TRUE)
-//   DO
-//     BEGIN
-//       IF List[Count].Node = ''
-//       THEN
-//         CheckElemArray := FALSE
-//     END;
-//   CheckElemArray := Found
-// END;
 
 PROCEDURE PrintList(VAR FOut: TEXT; VAR List: RecArray; VAR First: INTEGER);
 VAR
