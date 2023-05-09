@@ -6,19 +6,13 @@ VAR
   Node: STRING;
   List: RecArray;
   First: INTEGER;
+  CountAllWards: INTEGER;
 BEGIN {CountWords}
   ASSIGN(FileWithText, 'INPUT.txt');
   ASSIGN(FileForOutpup, 'OUTPUT.txt');
   ASSIGN(FileTemt, 'TEMP.txt');
   RESET(FileWithText);
-  WHILE NOT EOF(FileWithText)
-  DO
-    BEGIN
-      CreateList(FileWithText, List, First);
-      REWRITE(FileForOutpup);
-      PrintList(FileForOutpup, List, First);
-      CreateList(FileWithText, List, First);
-      REWRITE(FileTemt);
-      PrintList(FileTemt, List, First);
-    END
+  REWRITE(FileForOutpup);
+  REWRITE(FileTemt);
+  CreateFile(FileWithText, FileForOutpup, FileTemt, List, First, CountAllWards);
 END.  {CountWords}

@@ -10,16 +10,19 @@ TYPE
               Count: INTEGER;
               Next: 0 .. MaxWords
             END;
-PROCEDURE CreateList(VAR FIn: TEXT; VAR List: RecArray; VAR First: INTEGER);
-PROCEDURE PrintList(VAR FOut: TEXT; VAR List: RecArray; VAR First: INTEGER);
+  Node = RECORD
+          Node: STRING;
+          Count: INTEGER;
+        END;
+PROCEDURE CreateFile(VAR Fin: TEXT; VAR Fout1: TEXT; VAR Fout2: TEXT; VAR List: RecArray; VAR First: INTEGER; VAR CountAllWards: INTEGER);
 
 IMPLEMENTATION
 USES
   WorkWithWord;
 
-FUNCTION CheckMax(MaxWords: INTEGER; CountAllWards: INTEGER): BOOLEAN;
+FUNCTION CheckMax(MaxWords: INTEGER; CountArrWords: INTEGER): BOOLEAN;
 BEGIN
-  IF CountAllWards >= MaxWords
+  IF CountArrWords >= MaxWords
   THEN
     BEGIN
      CheckMax := TRUE;
@@ -35,6 +38,7 @@ BEGIN
   List[Curr].Count := List[Curr].Count + 1;
   Count := Count - 1
 END;
+
 
 PROCEDURE InsertList(VAR List: RecArray; VAR Node: STRING; VAR Count: INTEGER; VAR First: INTEGER);
 VAR
@@ -76,18 +80,18 @@ BEGIN
     END;
 END;
 
-PROCEDURE CreateList(VAR FIn: TEXT; VAR List: RecArray; VAR First: INTEGER);
+PROCEDURE CreateList(VAR FIn: TEXT; VAR List: RecArray; VAR First: INTEGER; VAR CountAllWards: INTEGER);
 VAR
   Node: STRING;
-  CountAllWards, Prev, Curr: 0 .. MaxWords;
-  Count: INTEGER;
+  Prev, Curr: 0 .. MaxWords;
+  CountArrWords, Count: INTEGER;
   Found, FlagMaxWords, DuplicateWord: BOOLEAN;
 BEGIN {CreateList}
   First := 0;
   Count := 0;
-  CountAllWards := 0;
+  CountArrWords := 0;
   //FlagMaxWords := FALSE;
-  WHILE (NOT EOF(FIn)) AND (NOT CheckMax(MaxWords, CountAllWards))
+  WHILE (NOT EOF(FIn)) AND (NOT CheckMax(MaxWords, CountArrWords))
   DO
     BEGIN
       IF NOT EOLN(FIn)
@@ -100,34 +104,142 @@ BEGIN {CreateList}
             BEGIN
               Count := Count + 1;
               CountAllWards := CountAllWards + 1;
+              CountArrWords := CountArrWords + 1;
               InsertList(List, Node, Count, First)
             END
         END
       ELSE
         READLN(FIn)
     END; 
-    WRITELN('All: ', CountAllWards, '.Unic: ', Count) 
+  WRITELN('All: ', CountAllWards, '.Unic: ', Count) 
 END; {CreateList}
 
 
-
-
-
-
-
-
-PROCEDURE PrintList(VAR FOut: TEXT; VAR List: RecArray; VAR First: INTEGER);
+PROCEDURE ReadWordAndCountOfFile(VAR FIn: TEXT; VAR NodeFile: Node);
 VAR
-  Count: INTEGER;
-BEGIN {PrintList}
-  Count := First;
-  WHILE Count <> 0
-  DO
+  Ch: CHAR;
+BEGIN
+  IF (NOT EOLN(FIn)) AND (NOT EOF(FIn)) 
+  THEN
+    BEGIN
+      READ(FIn, Ch);
+      WHILE (Ch <> ' ') 
+      DO
+        BEGIN
+          NodeFile.Node := NodeFile.Node + Ch;
+          READ(FIn, Ch);
+        END;
+      READ(FIn, NodeFile.Count);
+      READLN(FIn)
+    END;
+END;
+
+PROCEDURE ReadFileAndСompareWithWordArr(VAR FIn: TEXT; VAR FOut: TEXT; VAR List: RecArray; VAR First: INTEGER; VAR FindPlaceNodeFile: BOOLEAN);
+BEGIN
+  IF FindPlaceNodeFile
+  THEN 
+    BEGIN
+      NodeFile.Node := '';
+      NodeFile.Count := 0;
+      ReadWordAndCountOfFile(FIn, NodeFile)
+    END;
+  IF NodeFile.Node <> ''
+  THEN
+    BEGIN
+      IF List[Count].Node >= NodeFile.Node
+      THEN
+        BEGIN
+          IF List[Count].Node = NodeFile.Node
+          THEN
+            BEGIN
+              NodeFile.Count := NodeFile.Count + List[Count].Count;
+              Count := List[Count].Next; 
+            END;
+          WRITELN(FOut, NodeFile.Node, ' ', NodeFile.Count);
+          FindPlaceNodeFile := TRUE;
+          NodeFile.Node := '';
+          NodeFile.Count := 0;
+        END
+      ELSE
+        BEGIN
+          WRITELN(FOut, List[Count].Node, ' ', List[Count].Count);
+          Count := List[Count].Next;
+          FindPlaceNodeFile := FALSE;
+        END
+    END
+  ELSE
     BEGIN
       WRITELN(FOut, List[Count].Node, ' ', List[Count].Count);
       Count := List[Count].Next
     END
+END;
+
+PROCEDURE PrintList(VAR FIn: TEXT; VAR FOut: TEXT; VAR List: RecArray; VAR First: INTEGER);
+VAR
+  Count: INTEGER;
+  NodeFile: Node;
+  FindPlaceNodeFile: BOOLEAN;
+BEGIN {PrintList}
+  FindPlaceNodeFile := TRUE;
+  Count := First;
+  NodeFile.Node := '';
+  NodeFile.Count := 0;
+  WHILE Count <> 0
+  DO
+    BEGIN
+      IF NOT EOF(FIn)
+      THEN
+        BEGIN
+          ReadWordFromFileAndСompareWithWordArr(FIn, FOut, List, First, FindPlaceNodeFile);
+        END
+      ELSE
+        BEGIN
+          WRITELN(FOut, List[Count].Node, ' ', List[Count].Count);
+          Count := List[Count].Next
+        END
+    END;
+  IF NodeFile.Node <> ''
+  THEN
+    WRITELN(FOut, NodeFile.Node, ' ', NodeFile.Count);
+  WHILE NOT EOF(FIn)
+  DO
+    BEGIN
+      NodeFile.Node := '';
+      NodeFile.Count := 0;
+      ReadWordAndCountOfFile(FIn, NodeFile);
+      IF NodeFile.Node <> ''
+      THEN
+        WRITELN(FOut, NodeFile.Node, ' ', NodeFile.Count);
+    END;
 END; {PrintList}
 
+PROCEDURE CreateFile(VAR Fin: TEXT; VAR FOut1: TEXT; VAR FOut2: TEXT; VAR List: RecArray; VAR First: INTEGER; VAR CountAllWards: INTEGER);
+VAR
+  WriteFOut1: BOOLEAN;
 BEGIN {sort}
+  CountAllWards := 0;
+  WriteFOut1 := TRUE;
+  WHILE NOT EOF(FIn) 
+  DO
+    BEGIN
+      CreateList(FIn, List, First, CountAllWards);
+      IF WriteFOut1
+      THEN
+        BEGIN
+          RESET(FOut2);
+          REWRITE(FOut1);
+          PrintList(FOut2, FOut1, List, First);
+          WriteFOut1 := FALSE
+        END
+      ELSE
+        BEGIN
+          RESET(FOut1);
+          REWRITE(FOut2);
+          PrintList(FOut1, FOut2, List, First);
+          WriteFOut1 := TRUE;
+        END  
+    END;
+  WRITELN('All: ', CountAllWards) 
+END;
+BEGIN
 END. {sort}
