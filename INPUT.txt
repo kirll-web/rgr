@@ -1520,7 +1520,7 @@ IV. Answer the questions:
 11.Why does the American bank use the Internet?
 59
 UNIT 13
-I. Learn the following words and expressions: disaster Ц беда, бедствие, несчастье agent programs Ц концепции агентов attempt Ц пытатьс€, стремитьс€ carry out Ц выполн€ть crypting/ decrypting Ц шифрование, расшифровка default Ц невыполнение, несоблюдение deletion Ц удаление destroy Ц разрушать destructive Ц разрушительный, уничтожительный devastate Ц истощать, опустошать executable Ц выполн€емый protection Ц защита remarkable Ц примечательный restrict Ц ограничивать satisfactory Ц удовлетворительный differentiate Ц различать, разграничивать fight Ц боротьс€ virology Ц вирусологи€ wiping Ц вытирать, протирать worm Ц черв€к, червь
+I. Learn the following words and expressions: disaster Ц беда, бедствие, несчастье agent programs Ц концепции агентов attempt Ц пытатьс€, стремитьс€ carry out Ц выполн€ть crypting/ decrypting Ц шифрование, расшифровка default Ц невыполнение, несоблюдение deletion Ц удаление destroy Ц разрушать destructive Ц разрушительный, уничтожительный devastate Ц истощать, ошать executable Ц выполн€емый protection Ц защита remarkable Ц примечательный restrict Ц ограничивать satisfactory Ц удовлетворительный differentiate Ц различать, разграничивать fight Ц боротьс€ virology Ц вирусологи€ wiping Ц вытирать, протирать worm Ц черв€к, червь
 II. Study the following text:
 What is a computer virus?
 It is an executable code able to reproduce itself. Viruses are an area of pure programming, and, unlike other computer programs, can intellectual functions on protection from being found and destroyed. They have to fight for survival in complex conditions of conflicting computer systems. That's why they evolve as if they were alive.
@@ -1921,7 +1921,7 @@ bar Ц штрих barcode Ц штрихкод barcode reader Ц сканер штрихкода
 base on/upon Ц основыватьс€ на
 basic Ц основной be referred Ц считатьс€, называтьс€ be/get familiar with Ц быть знакомым/познакомитьс€ с below Ц ниже, под between Ц между bill Ц счет
 bit Ц binary digit Ц двоичный код
-bit (binary digit) Ц бит blank Ц пробел blank Ц пустой, свободный blank space Ц знак пробела
+bit (binary digit) Ц бит blank Ц пробел blank Ц й, свободный blank space Ц знак пробела
 bold Ц жирный (о шрифте)
 boot up Ц загружать bottom Ц дно, низ
 box Ц коробка, корпус brief Ц краткий broad Ц широкий broadly speaking Ц говор€ в общем, в целом

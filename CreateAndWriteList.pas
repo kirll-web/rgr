@@ -134,7 +134,7 @@ BEGIN
     END;
 END;
 
-PROCEDURE ReadFileAnd–°ompareWithWordArr(VAR FIn: TEXT; VAR FOut: TEXT; VAR List: RecArray; VAR First: INTEGER; VAR FindPlaceNodeFile: BOOLEAN);
+PROCEDURE ReadFileAndCompareWithWordArr(VAR FIn: TEXT; VAR FOut: TEXT; VAR List: RecArray; VAR Count: INTEGER;  VAR First: INTEGER; VAR NodeFile: Node; VAR FindPlaceNodeFile: BOOLEAN);
 BEGIN
   IF FindPlaceNodeFile
   THEN 
@@ -174,33 +174,37 @@ BEGIN
     END
 END;
 
-PROCEDURE PrintList(VAR FIn: TEXT; VAR FOut: TEXT; VAR List: RecArray; VAR First: INTEGER);
+PROCEDURE PrintList(VAR FIn: TEXT; VAR FOut: TEXT; VAR List: RecArray; VAR First: INTEGER; VAR FinallyRewrite: BOOLEAN);
 VAR
   Count: INTEGER;
   NodeFile: Node;
   FindPlaceNodeFile: BOOLEAN;
 BEGIN {PrintList}
-  FindPlaceNodeFile := TRUE;
-  Count := First;
-  NodeFile.Node := '';
-  NodeFile.Count := 0;
-  WHILE Count <> 0
-  DO
-    BEGIN
-      IF NOT EOF(FIn)
-      THEN
-        BEGIN
-          ReadWordFromFileAnd–°ompareWithWordArr(FIn, FOut, List, First, FindPlaceNodeFile);
-        END
-      ELSE
-        BEGIN
-          WRITELN(FOut, List[Count].Node, ' ', List[Count].Count);
-          Count := List[Count].Next
-        END
-    END;
-  IF NodeFile.Node <> ''
+  IF NOT FinallyRewrite
   THEN
-    WRITELN(FOut, NodeFile.Node, ' ', NodeFile.Count);
+    BEGIN
+      FindPlaceNodeFile := TRUE;
+      Count := First;
+      NodeFile.Node := '';
+      NodeFile.Count := 0;
+      WHILE Count <> 0
+      DO
+        BEGIN
+          IF NOT EOF(FIn)
+          THEN
+            BEGIN
+              ReadFileAndCompareWithWordArr(FIn, FOut, List, Count, First, NodeFile, FindPlaceNodeFile);
+            END
+          ELSE
+            BEGIN
+              WRITELN(FOut, List[Count].Node, ' ', List[Count].Count);
+              Count := List[Count].Next
+            END
+        END;
+      IF NodeFile.Node <> ''
+      THEN
+        WRITELN(FOut, NodeFile.Node, ' ', NodeFile.Count);
+    END;
   WHILE NOT EOF(FIn)
   DO
     BEGIN
@@ -216,7 +220,9 @@ END; {PrintList}
 PROCEDURE CreateFile(VAR Fin: TEXT; VAR FOut1: TEXT; VAR FOut2: TEXT; VAR List: RecArray; VAR First: INTEGER; VAR CountAllWards: INTEGER);
 VAR
   WriteFOut1: BOOLEAN;
+  FinallyRewrite: BOOLEAN;
 BEGIN {sort}
+  FinallyRewrite := FALSE;
   CountAllWards := 0;
   WriteFOut1 := TRUE;
   WHILE NOT EOF(FIn) 
@@ -228,16 +234,31 @@ BEGIN {sort}
         BEGIN
           RESET(FOut2);
           REWRITE(FOut1);
-          PrintList(FOut2, FOut1, List, First);
+          PrintList(FOut2, FOut1, List, First, FinallyRewrite);
           WriteFOut1 := FALSE
         END
       ELSE
         BEGIN
           RESET(FOut1);
           REWRITE(FOut2);
-          PrintList(FOut1, FOut2, List, First);
+          PrintList(FOut1, FOut2, List, First, FinallyRewrite);
           WriteFOut1 := TRUE;
         END  
+    END;
+  IF WriteFOut1
+  THEN
+    BEGIN
+      FinallyRewrite := TRUE;
+      RESET(FOut2);
+      REWRITE(FOut1);
+      PrintList(FOut2, FOut1, List, First, FinallyRewrite);
+      REWRITE(FOut2);
+      WRITELN(FOut2)
+    END
+  ELSE
+    BEGIN
+      REWRITE(FOut2);
+      WRITELN(FOut2, 'œ”—“Œ');
     END;
   WRITELN('All: ', CountAllWards) 
 END;
