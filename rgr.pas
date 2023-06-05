@@ -1,18 +1,20 @@
 PROGRAM CountWords(INPUT, OUTPUT);
 USES
   CreateAndWriteList;
+USES
+  WorkWithMatchingWords;
 VAR
-  FileWithText, FileForOutpup, FileTemt: TEXT;
-  Node: STRING;
-  List: RecArray;
-  First: INTEGER;
-  CountAllWards: INTEGER;
+  FileWithText, FileForOutpup, FileTemt, FEndings, FMatchingWords: TEXT;
 BEGIN {CountWords}
-  ASSIGN(FileWithText, 'INPUT.txt');
+  ASSIGN(FileWithText, 'INPUT44.txt');
   ASSIGN(FileForOutpup, 'OUTPUT.txt');
   ASSIGN(FileTemt, 'TEMP.txt');
+  ASSIGN(FEndings, 'endings.txt');
+  ASSIGN(FMatchingWords, 'MatchingWords.txt');
   RESET(FileWithText);
   REWRITE(FileForOutpup);
   REWRITE(FileTemt);
-  CreateFile(FileWithText, FileForOutpup, FileTemt, List, First, CountAllWards);
+  CreateFile(FileWithText, FileForOutpup, FileTemt);
+  CreateFileWithMatchingWords(FileForOutpup, FMatchingWords, FEndings);
 END.  {CountWords}
+

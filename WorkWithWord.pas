@@ -1,8 +1,21 @@
 UNIT WorkWithWord;
 INTERFACE
-PROCEDURE CreateNode(VAR FIn: TEXT; VAR Node: STRING);
 
+TYPE
+  NodeFromFile = RECORD
+                   Word: STRING;
+                   Count: INTEGER
+                 END;
+
+PROCEDURE CreateWord(VAR FIn: TEXT; VAR Word: STRING);
+PROCEDURE ReadWordAndCountFromFile(VAR FIn: TEXT; VAR NodeOfFile: NodeFromFile);
 IMPLEMENTATION
+CONST 
+  CapitalizeLetters = ['A' .. 'Z', 'À'..'ß'];
+  CharsRange = ['à' .. 'ÿ', 'a' .. 'z', '-', '¸'];
+  CodeLetterToLowerCase = 32; 
+
+
 PROCEDURE ReadLetter(VAR FIn: TEXT; VAR Letter: CHAR);
 BEGIN{ReadLetter}
   Letter := '';
@@ -10,9 +23,9 @@ BEGIN{ReadLetter}
   THEN
     BEGIN
       READ(FIn, Letter); 
-      IF Letter IN ['A' .. 'Z', 'À'..'ß'] 
+      IF Letter IN CapitalizeLetters
       THEN
-        Letter := CHR(ORD(Letter)+32)
+        Letter := CHR(ORD(Letter)+ CodeLetterToLowerCase)
       ELSE 
         BEGIN
           IF Letter = '¨'
@@ -22,19 +35,9 @@ BEGIN{ReadLetter}
     END;
 END;{ReadLetter}
 
-PROCEDURE CreateNode(VAR FIn: TEXT; VAR Node: STRING);
-CONST
-  CharsRange = ['à' .. 'ÿ', 'a' .. 'z', '-', '¸'];
-VAR
-  Count: INTEGER;
-  Letter: CHAR;
-  FoundDash: BOOLEAN;
-  FoundWordWrap: BOOLEAN;
-
-
-PROCEDURE WorkWithDash(VAR FIn: TEXT; VAR Letter: CHAR; VAR Count: INTEGER; VAR Node: STRING; VAR FoundDash: BOOLEAN; VAR FoundWordWrap: BOOLEAN);
+PROCEDURE WorkWithDash(VAR FIn: TEXT; VAR Letter: CHAR; VAR Count: INTEGER; VAR Word: STRING; VAR FoundDash: BOOLEAN; VAR FoundWordWrap: BOOLEAN);
 BEGIN
-  IF NOT(((Count = 1) OR (Node[POS('-', Node)] = '-')) OR FoundDash)
+  IF NOT(((Count = 1) OR (Word[POS('-', Word)] = '-')) OR FoundDash)
   THEN
     BEGIN
       FoundDash := TRUE;
@@ -52,25 +55,25 @@ BEGIN
     END
 END;
 
-PROCEDURE CreateWord(VAR FIn: TEXT; VAR Letter: CHAR; VAR Count: INTEGER; VAR Node: STRING; VAR FoundDash: BOOLEAN; VAR FoundWordWrap: BOOLEAN);
+PROCEDURE MergeLetterWithStr(VAR FIn: TEXT; VAR Letter: CHAR; VAR Count: INTEGER; VAR Word: STRING; VAR FoundDash: BOOLEAN; VAR FoundWordWrap: BOOLEAN);
 BEGIN {CreateWord}
   IF Letter IN CharsRange
   THEN
     BEGIN
       IF Letter = '-'
       THEN
-        WorkWithDash(FIn, Letter, Count, Node, FoundDash, FoundWordWrap)
+        WorkWithDash(FIn, Letter, Count, Word, FoundDash, FoundWordWrap)
       ELSE
         BEGIN
           IF FoundDash AND (NOT FoundWordWrap)
           THEN
             BEGIN
-              Node := Node + '-' + Letter;
+              Word := Word + '-' + Letter;
               FoundDash := FALSE
             END
           ELSE
             BEGIN
-              Node := Node + Letter;
+              Word := Word + Letter;
               FoundWordWrap := FALSE;
               FoundDash := FALSE
             END
@@ -79,19 +82,48 @@ BEGIN {CreateWord}
     END
 END; {CreateWord}
 
+PROCEDURE CreateWord(VAR FIn: TEXT; VAR Word: STRING);
+VAR
+  Count: INTEGER;
+  Letter: CHAR;
+  FoundDash: BOOLEAN;
+  FoundWordWrap: BOOLEAN;
 
 BEGIN {CreateNode}
   Letter := '';
-  Node := '';
+  Word := '';
   Count := 1;
   FoundDash := FALSE;
   FoundWordWrap := FALSE;
   REPEAT
     ReadLetter(FIn, Letter);
-    CreateWord(FIn, Letter, Count, Node, FoundDash, FoundWordWrap);
-    
+    MergeLetterWithStr(FIn, Letter, Count, Word, FoundDash, FoundWordWrap);   
   UNTIL NOT((Letter IN CharsRange) AND ((NOT EOLN(FIn)) OR (NOT EOF(FIn))));
 END; {ReadWord}
+
+PROCEDURE ReadWordAndCountFromFile(VAR FIn: TEXT; VAR NodeOfFile: NodeFromFile);
+VAR
+  Ch: CHAR;
+BEGIN
+  NodeOfFile.Word := '';
+  IF (NOT EOLN(FIn)) AND (NOT EOF(FIn)) 
+  THEN
+    BEGIN
+      READ(FIn, Ch);
+      WHILE (Ch <> ' ') 
+      DO
+        BEGIN
+          IF NodeOfFile.Word = ''
+          THEN
+            NodeOfFile.Word := Ch
+          ELSE
+            NodeOfFile.Word := NodeOfFile.Word + Ch;
+          READ(FIn, Ch)
+        END;
+      READ(FIn, NodeOfFile.Count);
+      READLN(FIn)
+    END
+END;
 
 BEGIN {WorkWithWords}
 END. {WorkWithWords}
